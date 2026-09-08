@@ -4,11 +4,15 @@
   "private": true,
   "description": "ZopDev free cloud cost audit campaign. Pre-launch draft, not cleared for deployment.",
   "scripts": {
+    "start": "node server.cjs",
     "preview": "python3 -m http.server 8792 --bind 127.0.0.1",
     "verify": "node verify-cloud-audit.cjs"
   },
   "devDependencies": {
     "axe-core": "^4.13.0",
     "playwright": "^1.63.0"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }

@@ -26,6 +26,21 @@ docs/
   hover-variants.html           13 hover treatments for the hero headline
 ```
 
+## Hosting
+
+The ZopCloud service runs this as a container listening on **port 8000**, so the
+repo serves itself rather than relying on static-file hosting:
+
+- `Dockerfile` + `nginx.conf` — nginx serving the page on 8000. Only
+  `index.html`, `styles.css`, `audit.js` and `assets/` are copied into the
+  image, so the internal records never ship.
+- `server.cjs` + `npm start` — a zero-dependency Node fallback on
+  `$PORT` (default 8000), used only if the build runs a Node buildpack
+  instead of the Dockerfile.
+
+Both serve the identical four things. Nothing else is required: there is no
+build step and no runtime dependency.
+
 ## Preview
 
 ```bash
