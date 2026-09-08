@@ -1,0 +1,10 @@
+# Internal records: never ship these to a public host.
+PRODUCT.md
+OUTLINE-AND-HANDOFF.md
+README.md
+docs/
+verify-cloud-audit.cjs
+package.json
+package-lock.json
+node_modules/
+qa-results/
