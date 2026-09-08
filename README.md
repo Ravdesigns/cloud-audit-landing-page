@@ -4,19 +4,21 @@ The ZopDev free cloud cost audit campaign. A single self-contained static page: 
 
 > ## Not cleared for deployment
 >
-> This is a reviewable pre-launch draft. It carries `<meta name="robots" content="noindex, nofollow">` and its form is in **preview mode** — `endpoint` and `privacyUrl` in `cloud-audit/audit.js` are deliberately empty, so submitting sends nothing and stores nothing.
+> This is a reviewable pre-launch draft. It carries `<meta name="robots" content="noindex, nofollow">` and its form is in **preview mode** — `endpoint` and `privacyUrl` in `audit.js` are deliberately empty, so submitting sends nothing and stores nothing.
 >
 > Do not deploy, and do not remove the `noindex`, until every item under [Launch blockers](#launch-blockers) is closed.
 
 ## Layout
 
+The page sits at the repository root so any repo-to-URL host serves it with no
+publish-directory setting and no build step.
+
 ```
-cloud-audit/            the campaign; deploys as-is to a static host
-  index.html
-  styles.css
-  audit.js              lead adapter, preview mode by default
-  assets/               self-hosted fonts, ZopDev logos, provider marks
-  OUTLINE-AND-HANDOFF.md  the living record: brief, decisions, revisions
+index.html              the campaign
+styles.css
+audit.js                lead adapter, preview mode by default
+assets/                 self-hosted fonts, ZopDev logos, provider marks
+OUTLINE-AND-HANDOFF.md  the living record: brief, decisions, revisions
 PRODUCT.md              durable product truth. Read before changing copy.
 verify-cloud-audit.cjs  browser QA harness (Playwright + axe-core)
 docs/
