@@ -1,0 +1,96 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>24 hours - hover variations</title>
+<style>
+@font-face{font-family:Space Grotesk;src:url(assets/space-grotesk-700.woff2) format('woff2');font-weight:700;font-display:swap}
+@font-face{font-family:Inter;src:url(assets/inter-variable.woff2) format('woff2');font-weight:100 900;font-display:swap}
+:root{--orange:#F58549;--ink:#0F0F12;--muted:#636368;--line:#E2E2E2;--paper:#FAFAFA;--e:cubic-bezier(.16,1,.3,1);--back:cubic-bezier(.34,1.5,.64,1)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 16px/1.6 Inter,sans-serif}
+.wrap{max-width:1240px;margin:0 auto;padding:52px 34px 80px}
+h1{font:700 32px/1.1 'Space Grotesk',sans-serif;letter-spacing:-.04em;margin:0 0 10px}
+.sub{color:var(--muted);font-size:13.5px;margin:0 0 4px;max-width:78ch}
+.band{margin:40px 0 0;font:700 12px/1 'Space Grotesk',sans-serif;letter-spacing:.1em;color:var(--ink);border-left:3px solid var(--orange);padding:4px 0 4px 10px}
+.colhead{display:grid;grid-template-columns:196px 1fr 1fr;gap:28px;padding:18px 0 8px;font-size:9px;letter-spacing:.14em;color:#9a9aa2;font-weight:600}
+.row{border-top:1px solid var(--line);padding:26px 0 30px;display:grid;grid-template-columns:196px 1fr 1fr;gap:28px;align-items:center}
+.meta .n{font-size:9px;letter-spacing:.14em;color:var(--muted);font-weight:600}
+.meta h2{font:700 16px/1.25 'Space Grotesk',sans-serif;letter-spacing:-.02em;margin:7px 0 6px}
+.meta p{font-size:11.5px;line-height:1.7;color:var(--muted);margin:0}
+.demo{font:700 clamp(26px,2.9vw,40px)/1.1 'Space Grotesk',sans-serif;letter-spacing:-.05em}
+/* shared: orange rule at rest (:after), orange block on hover (:before), ink text on top */
+.hl{position:relative;white-space:nowrap;z-index:0;cursor:default}
+.hl:after{content:'';position:absolute;left:-3px;right:-3px;bottom:5px;height:9px;background:var(--orange);z-index:-1}
+.hl:before{content:'';position:absolute;left:-3px;right:-3px;top:2px;bottom:2px;background:var(--orange);z-index:-1;transform:scaleY(0)}
+/* ── batch 1 ── */
+.v1 .hl:before{transform-origin:bottom;transition:transform .34s var(--e)}
+.v1 .hl:hover:before,.v1.on .hl:before{transform:scaleY(1)}
+.v2 .hl:before{transform:scaleX(0);transform-origin:left;transition:transform .42s var(--e)}
+.v2 .hl:hover:before,.v2.on .hl:before{transform:scaleX(1)}
+.v3 .hl:before{display:none}
+.v3 .hl:after{transition:height .3s var(--e)}
+.v3 .hl:hover:after,.v3.on .hl:after{height:.34em}
+.v4 .hl{display:inline-block;transition:transform .3s var(--e)}
+.v4 .hl:hover,.v4.on .hl{transform:translateY(-4px)}
+.v4 .hl:before{transform-origin:bottom;transition:transform .34s var(--e)}
+.v4 .hl:hover:before,.v4.on .hl:before{transform:scaleY(1)}
+.v5 .hl:before{transform:scaleX(0);transform-origin:center;transition:transform .4s var(--e)}
+.v5 .hl:hover:before,.v5.on .hl:before{transform:scaleX(1)}
+.v6 .hl:before{transform:scaleX(0) skewX(-12deg);transform-origin:left;transition:transform .44s cubic-bezier(.2,.85,.2,1)}
+.v6 .hl:hover:before,.v6.on .hl:before{transform:scaleX(1) skewX(-12deg)}
+/* ── batch 2 ── */
+/* 07 per-character cascade */
+.v7 .hl:before{display:none}
+.v7 .hl>span{position:relative;z-index:0;display:inline-block}
+.v7 .hl>span:before{content:'';position:absolute;left:-1px;right:-1px;top:2px;bottom:2px;background:var(--orange);z-index:-1;transform:scaleY(0);transform-origin:bottom;transition:transform .3s var(--e);transition-delay:calc(var(--i)*38ms)}
+.v7 .hl:hover>span:before,.v7.on .hl>span:before{transform:scaleY(1)}
+/* 08 vertical roll: plain state rolls up, orange state arrives */
+.v8 .hl:before{display:none}
+.v8 .hl{display:inline-block;overflow:hidden;vertical-align:bottom;padding:0 3px;height:1.22em}
+.v8 .roll{display:block;transition:transform .42s var(--e)}
+.v8 .roll>span{display:block;line-height:1.22}
+.v8 .roll .b{background:var(--orange)}
+.v8 .hl:hover .roll,.v8.on .roll{transform:translateY(-50%)}
+/* 09 dark invert: block goes ink, text goes orange (7.1:1) */
+.v9 .hl{transition:color .3s var(--e)}
+.v9 .hl:before{background:var(--ink);transform-origin:bottom;transition:transform .34s var(--e)}
+.v9 .hl:hover,.v9.on .hl{color:var(--orange)}
+.v9 .hl:hover:before,.v9.on .hl:before{transform:scaleY(1)}
+.v9 .hl:after{transition:opacity .2s var(--e)}
+.v9 .hl:hover:after,.v9.on .hl:after{opacity:0}
+/* 10 hard offset shadow, quoting the button's 0 8px 0 -4px */
+.v10 .hl:before{display:none}
+.v10 .hl{transition:text-shadow .26s var(--e)}
+.v10 .hl:hover,.v10.on .hl{text-shadow:6px 6px 0 var(--orange)}
+.v10 .hl:after{transition:opacity .22s var(--e)}
+.v10 .hl:hover:after,.v10.on .hl:after{opacity:0}
+/* 11 twenty-four tick scale fills left to right */
+.v11 .hl:before{display:none}
+.v11 .hl:after{height:11px;background-image:repeating-linear-gradient(90deg,var(--orange) 0 4px,transparent 4px 9px);background-color:transparent;background-repeat:no-repeat;background-size:0 100%;transition:background-size .62s linear}
+.v11 .hl:hover:after,.v11.on .hl:after{background-size:100% 100%}
+/* 12 diagonal clip wipe */
+.v12 .hl:before{transform:none;clip-path:polygon(0 0,0 0,0 100%,0 100%);transition:clip-path .44s var(--e)}
+.v12 .hl:hover:before,.v12.on .hl:before{clip-path:polygon(0 0,118% 0,100% 100%,0 100%)}
+/* 13 overshoot sweep */
+.v13 .hl:before{transform-origin:bottom;transition:transform .5s var(--back)}
+.v13 .hl:hover:before,.v13.on .hl:before{transform:scaleY(1)}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important}}
+</style></head><body><div class="wrap">
+<h1>&ldquo;24 hours.&rdquo; hover variations</h1>
+<p class="sub">Thirteen treatments. Shared geometry: orange rule at rest, orange fill on hover, ink text on top. Every variant holds AA (ink on orange 7.1:1; 09 inverts to orange on ink, also 7.1:1). Right column is frozen at the end state; hover the left one for the curve.</p>
+<div class="band">BATCH 1 / BLOCK SWEEPS</div>
+<div class="colhead"><div></div><div>AT REST / HOVER ME</div><div>END STATE</div></div>
+<div class="row v1"><div class="meta"><div class="n">01 / SHIPPED</div><h2>Sweep up</h2><p>Block grows from the baseline. Calmest read.</p></div><div class="demo">In <span class="hl">24&nbsp;hours.</span></div><div class="demo v1 on">In <span class="hl">24&nbsp;hours.</span></div></div>
+<div class="row v2"><div class="meta"><div class="n">02</div><h2>Wipe across</h2><p>Left to right, like a highlighter pass. Most literal.</p></div><div class="demo">In <span class="hl">24&nbsp;hours.</span></div><div class="demo v2 on">In <span class="hl">24&nbsp;hours.</span></div></div>
+<div class="row v3"><div class="meta"><div class="n">03</div><h2>Thicken only</h2><p>Rule deepens, never becomes a block. Most restrained.</p></div><div class="demo">In <span class="hl">24&nbsp;hours.</span></div><div class="demo v3 on">In <span class="hl">24&nbsp;hours.</span></div></div>
+<div class="row v4"><div class="meta"><div class="n">04</div><h2>Sweep up + lift</h2><p>Block rises and the word lifts 4px, quoting the button hover.</p></div><div class="demo">In <span class="hl">24&nbsp;hours.</span></div><div class="demo v4 on">In <span class="hl">24&nbsp;hours.</span></div></div>
+<div class="row v5"><div class="meta"><div class="n">05</div><h2>Split from centre</h2><p>Opens outward from the middle. Most mechanical.</p></div><div class="demo">In <span class="hl">24&nbsp;hours.</span></div><div class="demo v5 on">In <span class="hl">24&nbsp;hours.</span></div></div>
+<div class="row v6"><div class="meta"><div class="n">06</div><h2>Marker skew</h2><p>Skewed wipe, like a marker stroke. Least square.</p></div><div class="demo">In <span class="hl">24&nbsp;hours.</span></div><div class="demo v6 on">In <span class="hl">24&nbsp;hours.</span></div></div>
+<div class="band">BATCH 2 / DIFFERENT MECHANICS</div>
+<div class="colhead"><div></div><div>AT REST / HOVER ME</div><div>END STATE</div></div>
+<div class="row v7"><div class="meta"><div class="n">07</div><h2>Character cascade</h2><p>Each glyph fills in turn, 38ms apart. Most crafted, most expensive to read.</p></div><div class="demo">In <span class="hl"><span style="--i:0">2</span><span style="--i:1">4</span><span style="--i:2">&nbsp;</span><span style="--i:3">h</span><span style="--i:4">o</span><span style="--i:5">u</span><span style="--i:6">r</span><span style="--i:7">s</span><span style="--i:8">.</span></span></div><div class="demo v7 on">In <span class="hl"><span style="--i:0">2</span><span style="--i:1">4</span><span style="--i:2">&nbsp;</span><span style="--i:3">h</span><span style="--i:4">o</span><span style="--i:5">u</span><span style="--i:6">r</span><span style="--i:7">s</span><span style="--i:8">.</span></span></div></div>
+<div class="row v8"><div class="meta"><div class="n">08</div><h2>Vertical roll</h2><p>The plain word rolls up and an orange-set copy arrives. A state swap, not a fill.</p></div><div class="demo">In <span class="hl"><span class="roll"><span class="a">24&nbsp;hours.</span><span class="b">24&nbsp;hours.</span></span></span></div><div class="demo v8 on">In <span class="hl"><span class="roll"><span class="a">24&nbsp;hours.</span><span class="b">24&nbsp;hours.</span></span></span></div></div>
+<div class="row v9"><div class="meta"><div class="n">09</div><h2>Dark invert</h2><p>Block goes ink, text goes orange. Uses the brand band pairing in reverse.</p></div><div class="demo">In <span class="hl">24&nbsp;hours.</span></div><div class="demo v9 on">In <span class="hl">24&nbsp;hours.</span></div></div>
+<div class="row v10"><div class="meta"><div class="n">10</div><h2>Hard offset shadow</h2><p>No fill. The word casts a hard orange duplicate, straight off the button shadow.</p></div><div class="demo">In <span class="hl">24&nbsp;hours.</span></div><div class="demo v10 on">In <span class="hl">24&nbsp;hours.</span></div></div>
+<div class="row v11"><div class="meta"><div class="n">11</div><h2>24-tick scale</h2><p>Rule is a segmented scale that fills across. The only variant that means something.</p></div><div class="demo">In <span class="hl">24&nbsp;hours.</span></div><div class="demo v11 on">In <span class="hl">24&nbsp;hours.</span></div></div>
+<div class="row v12"><div class="meta"><div class="n">12</div><h2>Diagonal clip wipe</h2><p>Angled edge sweeps through. Sharper than the skew, keeps square type.</p></div><div class="demo">In <span class="hl">24&nbsp;hours.</span></div><div class="demo v12 on">In <span class="hl">24&nbsp;hours.</span></div></div>
+<div class="row v13"><div class="meta"><div class="n">13</div><h2>Overshoot sweep</h2><p>Same geometry as 01 on a back-out curve. Overshoots the cap, settles.</p></div><div class="demo">In <span class="hl">24&nbsp;hours.</span></div><div class="demo v13 on">In <span class="hl">24&nbsp;hours.</span></div></div>
+</div></body></html>

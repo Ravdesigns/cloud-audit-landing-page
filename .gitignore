@@ -1,0 +1,5 @@
+node_modules/
+qa-results/
+output/
+.DS_Store
+*.zip
