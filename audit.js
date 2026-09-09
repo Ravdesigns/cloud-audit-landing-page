@@ -47,24 +47,91 @@ const split = document.querySelector('.deliverable-split');
 const deck = document.querySelector('.report-deck');
 const views = [...document.querySelectorAll('.report-view')];
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
-let swapTimer;
 
-/* Slide the outgoing card out to the left and the incoming one in from the
-   right. The card swap is a plain function call, so if the animation is
-   unavailable the view still changes: motion is decoration over a working
-   switch, never a gate on it. */
-function activateView(tab) {
-  if (reduceMotion.matches || !deck) { applyView(tab); return; }
-  clearTimeout(swapTimer);
-  deck.classList.remove('is-swapping');
-  // Reflow so the animation restarts when the same class is re-added.
-  void deck.offsetWidth;
-  deck.classList.add('is-swapping');
-  deck.addEventListener('animationend', () => deck.classList.remove('is-swapping'), { once: true });
-  swapTimer = setTimeout(() => applyView(tab), 200);
+/* The cards cross-slide. The outgoing one travels its own width to the left;
+   the incoming one starts off-stage right and is held there until the outgoing
+   card is nearly gone, so the two overlap only at the handover instead of
+   swapping in place. Both are on stage together during the crossing, which is
+   the point, and the report stage clips the travel.
+
+   Web Animations API rather than a keyframe: a keyframe restarts from zero, so
+   clicking quickly through the three pointers stuttered. These cancel and
+   retarget, run off the main thread, and sequence on a promise instead of a
+   timer guessing at a percentage of a keyframe. */
+const EASE_OUT = 'cubic-bezier(.16,1,.3,1)';
+const OUT_MS = 220;
+const IN_MS = 280;
+/* The curve is strongly front-loaded: it covers 95% of the travel in the first
+   44% of the duration. So the outgoing card is down to its last 5% on stage at
+   ~95ms, which is where the incoming card starts. Measured, not guessed. */
+const HANDOVER_MS = 95;
+let running = [];
+let settleTimer;
+
+/* Each card rests at its own slight tilt, like a separate sheet of paper. The
+   travel has to carry that tilt, or the transform overrides it for the length
+   of the animation and it snaps back the moment the fill is released. */
+function tiltOf(card) {
+  return getComputedStyle(card).getPropertyValue('--rot').trim() || '0deg';
 }
 
-function applyView(tab) {
+function settle(outgoing) {
+  clearTimeout(settleTimer);
+  if (outgoing) outgoing.hidden = true;
+  running.forEach(animation => animation.cancel());
+  running = [];
+}
+
+/* Motion is decoration over a working switch, never a gate on it: every early
+   return below still changes the view. */
+function activateView(tab) {
+  const panel = document.getElementById(tab.getAttribute('aria-controls'));
+  const outgoing = views.find(view => !view.hidden);
+
+  if (!panel || !deck || !deck.animate || outgoing === panel) { applyView(tab); return; }
+
+  // Reduced motion keeps the opacity change, which is what tells you the view
+  // switched, and drops the travel.
+  if (reduceMotion.matches) {
+    applyView(tab);
+    panel.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 140, easing: 'linear' });
+    return;
+  }
+
+  settle();
+  applyView(tab, outgoing);
+  panel.hidden = false;
+
+  const outTilt = tiltOf(outgoing);
+  const inTilt = tiltOf(panel);
+
+  // No fade on the way out. The stage clips the card at its own edge, which is
+  // what makes it read as leaving a frame rather than dissolving in place.
+  const outMove = outgoing.animate([
+    { transform: `translateX(0) rotate(${outTilt})` },
+    { transform: `translateX(-104%) rotate(${outTilt})` },
+  ], { duration: OUT_MS, easing: EASE_OUT, fill: 'forwards' });
+
+  // fill:backwards holds the incoming card off-stage right through the
+  // handover delay, instead of flashing at its resting position first.
+  const inMove = panel.animate([
+    { transform: `translateX(104%) rotate(${inTilt})` },
+    { transform: `translateX(0) rotate(${inTilt})` },
+  ], { duration: IN_MS, delay: HANDOVER_MS, easing: EASE_OUT, fill: 'backwards' });
+  const inFade = panel.animate(
+    [{ opacity: 0 }, { opacity: 1 }],
+    { duration: 90, delay: HANDOVER_MS, easing: 'linear', fill: 'backwards' });
+
+  running = [outMove, inMove, inFade];
+  // cancel() rejects the pending promise, so an interrupted swap lands in the
+  // rejection handler rather than throwing.
+  inMove.finished.then(() => settle(outgoing), () => {});
+  // If a frame is dropped or the promise never settles, nothing may be left
+  // holding a forwards fill off-stage.
+  settleTimer = setTimeout(() => settle(outgoing), HANDOVER_MS + IN_MS + 400);
+}
+
+function applyView(tab, keepVisible) {
   viewTabs.forEach(item => {
     const selected = item === tab;
     item.setAttribute('aria-selected', String(selected));
@@ -72,13 +139,13 @@ function applyView(tab) {
   });
   if (split) split.dataset.view = tab.dataset.view;
   const panel = document.getElementById(tab.getAttribute('aria-controls'));
-  views.forEach(view => { view.hidden = view !== panel; });
+  views.forEach(view => { view.hidden = view !== panel && view !== keepVisible; });
 }
 
 /* Hold the deck at the tallest card so switching never shifts the page below
    it. Measured after layout because each card is a different height. */
 function lockDeckHeight() {
-  if (!deck || matchMedia('(max-width:1000px)').matches) return;
+  if (!deck || running.length || matchMedia('(max-width:1000px)').matches) return;
   const shown = views.find(view => !view.hidden);
   deck.style.removeProperty('--deck-h');
   const tallest = views.reduce((max, view) => {
