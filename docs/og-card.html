@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>OG card source - 1200x630</title>
+<!--
+  Source for assets/og-cloud-audit.png. Not served: server.cjs only serves
+  index.html, styles.css, audit.js and assets/.
+
+  Regenerate after any headline change:
+    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
+      --headless=new --disable-gpu --hide-scrollbars \
+      --force-device-scale-factor=1 --virtual-time-budget=8000 \
+      --window-size=1200,630 \
+      --screenshot=assets/og-cloud-audit.png \
+      http://127.0.0.1:PORT/docs/og-card.html
+-->
+<style>
+  @font-face{font-family:Space Grotesk;src:url(../assets/space-grotesk-700.woff2) format('woff2');font-weight:700;font-display:block}
+  @font-face{font-family:Inter;src:url(../assets/inter-variable.woff2) format('woff2');font-weight:100 900;font-display:block}
+  :root{--orange:#F58549;--blue:#2A4494;--green:#7FB236;--ink:#0F0F12;--cream:#f0ebdb;--cream-muted:#b6b3af}
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{width:1200px;height:630px;overflow:hidden;background:var(--ink);color:var(--cream);
+       font:400 16px/1.5 Inter,sans-serif;-webkit-font-smoothing:antialiased}
+  /* the brand band's tri-colour signature rule */
+  .rule{height:8px;background:linear-gradient(to right,var(--blue) 33.333%,var(--orange) 33.333% 66.666%,var(--green) 66.666%)}
+  .card{height:calc(630px - 8px);padding:62px 72px;display:flex;flex-direction:column}
+  .top{display:flex;align-items:center;justify-content:space-between}
+  .top img{display:block;width:168px;height:auto}
+  .tag{font-size:15px;letter-spacing:.14em;color:var(--cream-muted);font-weight:600}
+  /* No max-width: the <br> owns the line break, so the two lines read as written. */
+  h1{margin:auto 0 0;font-family:'Space Grotesk',sans-serif;font-weight:700;
+     font-size:86px;line-height:1.06;letter-spacing:-.055em;white-space:nowrap}
+  .hl{position:relative;white-space:nowrap;z-index:0;color:var(--ink)}
+  .hl:before{content:'';position:absolute;left:-8px;right:-8px;top:6px;bottom:8px;background:var(--orange);z-index:-1}
+  .foot{display:flex;align-items:baseline;gap:16px;margin-top:38px;font-size:22px;color:var(--cream-muted)}
+  .foot strong{color:var(--cream);font-weight:600}
+  .dot{width:11px;height:11px;background:var(--orange);flex:none;align-self:center}
+</style>
+</head>
+<body>
+  <div class="rule"></div>
+  <div class="card">
+    <div class="top">
+      <img src="../assets/zopdev-logo-white.svg" alt="Zopdev">
+      <span class="tag">FREE CLOUD COST AUDIT</span>
+    </div>
+    <h1>Find your cloud waste.<br>In <span class="hl">24 hours.</span></h1>
+    <div class="foot">
+      <span class="dot"></span>
+      <span>Your <strong>20 biggest</strong> compute and block-storage savings, backed by actual usage.</span>
+    </div>
+  </div>
+</body>
+</html>

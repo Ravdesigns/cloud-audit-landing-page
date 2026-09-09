@@ -13,6 +13,8 @@ const TYPES = {
   '.svg': 'image/svg+xml',
   '.woff2': 'font/woff2',
   '.ico': 'image/x-icon',
+  // The OG card. Social scrapers reject an image served as octet-stream.
+  '.png': 'image/png',
 };
 const ALLOWED = new Set(['/index.html', '/styles.css', '/audit.js']);
 
