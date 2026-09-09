@@ -15,6 +15,8 @@ const TYPES = {
   '.ico': 'image/x-icon',
   // The OG card. Social scrapers reject an image served as octet-stream.
   '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
 };
 const ALLOWED = new Set(['/index.html', '/styles.css', '/audit.js']);
 

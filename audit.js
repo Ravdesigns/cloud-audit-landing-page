@@ -23,19 +23,7 @@ const EXAMPLES = {
   }
 };
 
-/* Security and compliance flags shown in the evidence view. Illustrative, like
- * every other figure in this report, and labelled as such on the page. */
-const FLAGS = {
-  'api-worker-prod-03': 'Security group open to 0.0.0.0/0',
-  'staging-runner-02': 'Root volume not encrypted',
-  'batch-worker-07': 'Instance metadata v1 still allowed',
-  'app-data-volume-04': 'No snapshot in 90 days',
-  'analytics-volume-08': 'Not encrypted at rest',
-  'dev-data-volume-02': 'No lifecycle policy'
-};
-
 const tabs = [...document.querySelectorAll('.report-tabs [role="tab"]')];
-let currentView = 'savings';
 
 function activateCategory(tab) {
   const example = EXAMPLES[tab.dataset.category];
@@ -46,42 +34,62 @@ function activateCategory(tab) {
   });
   document.getElementById('findings-panel').setAttribute('aria-labelledby', tab.id);
   document.getElementById('sample-total').innerHTML = `${example.total}<span>/mo</span>`;
-  document.querySelector('.estimate-label').textContent = 'Across the 3 examples below';
-  const evidenceView = currentView === 'evidence';
-  document.querySelector('.report-head-evidence').textContent = evidenceView ? 'Security / compliance flag' : 'Usage evidence';
   // All report values are fixed illustrative examples, never visitor input.
-  document.getElementById('findings-body').innerHTML = example.rows.map(([name, finding, evidence, use, saving]) => {
-    const middle = evidenceView
-      ? `<span class="flag"><svg class="icon flag-icon" aria-hidden="true"><use href="#lock"/></svg>${FLAGS[name] || 'No flags raised'}</span>`
-      : `<span class="evidence-meter"><i style="--usage:${use}%"></i></span><span class="evidence-value">${evidence}</span>`;
-    return `<tr><td><span class="resource-name"><svg class="icon resource-icon" aria-hidden="true"><use href="#instance"/></svg> ${name}</span><span class="resource-detail">${finding}</span><span class="mobile-evidence">${evidenceView ? (FLAGS[name] || 'No flags raised') : evidence}</span></td><td>${middle}</td><td class="saving">${saving} <svg class="icon saving-trend" aria-hidden="true"><use href="#trend"/></svg></td></tr>`;
-  }).join('');
+  document.getElementById('findings-body').innerHTML = example.rows.map(([name, finding, evidence, use, saving]) =>
+    `<tr><td><span class="resource-name"><svg class="icon resource-icon" aria-hidden="true"><use href="#instance"/></svg> ${name}</span><span class="resource-detail">${finding}</span><span class="mobile-evidence">${evidence}</span></td><td><span class="evidence-meter"><i style="--usage:${use}%"></i></span><span class="evidence-value">${evidence}</span></td><td class="saving">${saving} <svg class="icon saving-trend" aria-hidden="true"><use href="#trend"/></svg></td></tr>`
+  ).join('');
 }
 
 /* The three deliverable descriptions are the report's view switcher: each one
- * shows the facet of the free audit it describes. */
+   shows a differently designed card for the facet it describes. */
 const viewTabs = [...document.querySelectorAll('.dg-item')];
+const split = document.querySelector('.deliverable-split');
+const deck = document.querySelector('.report-deck');
+const views = [...document.querySelectorAll('.report-view')];
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
+let swapTimer;
+
+/* Slide the outgoing card out to the left and the incoming one in from the
+   right. The card swap is a plain function call, so if the animation is
+   unavailable the view still changes: motion is decoration over a working
+   switch, never a gate on it. */
 function activateView(tab) {
-  currentView = tab.dataset.view;
+  if (reduceMotion.matches || !deck) { applyView(tab); return; }
+  clearTimeout(swapTimer);
+  deck.classList.remove('is-swapping');
+  // Reflow so the animation restarts when the same class is re-added.
+  void deck.offsetWidth;
+  deck.classList.add('is-swapping');
+  deck.addEventListener('animationend', () => deck.classList.remove('is-swapping'), { once: true });
+  swapTimer = setTimeout(() => applyView(tab), 200);
+}
+
+function applyView(tab) {
   viewTabs.forEach(item => {
     const selected = item === tab;
     item.setAttribute('aria-selected', String(selected));
     item.tabIndex = selected ? 0 : -1;
   });
-  document.getElementById('report-body').setAttribute('aria-labelledby', tab.id);
-
-  const waste = currentView === 'waste';
-  document.getElementById('waste-panel').hidden = !waste;
-  document.getElementById('findings-panel').hidden = waste;
-  document.querySelector('.report-tabs').hidden = waste;
-
-  if (waste) {
-    document.getElementById('sample-total').innerHTML = '$2,940<span>/mo</span>';
-    document.querySelector('.estimate-label').textContent = 'Idle and orphaned, 46 resources';
-  } else {
-    activateCategory(tabs.find(t => t.getAttribute('aria-selected') === 'true') || tabs[0]);
-  }
+  if (split) split.dataset.view = tab.dataset.view;
+  const panel = document.getElementById(tab.getAttribute('aria-controls'));
+  views.forEach(view => { view.hidden = view !== panel; });
 }
+
+/* Hold the deck at the tallest card so switching never shifts the page below
+   it. Measured after layout because each card is a different height. */
+function lockDeckHeight() {
+  if (!deck || matchMedia('(max-width:1000px)').matches) return;
+  const shown = views.find(view => !view.hidden);
+  deck.style.removeProperty('--deck-h');
+  const tallest = views.reduce((max, view) => {
+    view.hidden = false;
+    const height = view.offsetHeight;
+    view.hidden = view !== shown;
+    return Math.max(max, height);
+  }, 0);
+  if (tallest) deck.style.setProperty('--deck-h', `${Math.ceil(tallest)}px`);
+}
+
 viewTabs.forEach((tab, index) => {
   tab.addEventListener('click', () => activateView(tab));
   tab.addEventListener('keydown', event => {
@@ -110,6 +118,11 @@ tabs.forEach((tab, index) => {
     tabs[next].focus();
   });
 });
+
+activateCategory(tabs[0]);
+lockDeckHeight();
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(lockDeckHeight);
+addEventListener('resize', lockDeckHeight);
 
 const form = document.getElementById('audit-form');
 const status = document.getElementById('form-status');
