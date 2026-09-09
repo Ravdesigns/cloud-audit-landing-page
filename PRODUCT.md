@@ -47,8 +47,8 @@ The audit is strictly read-only. It inspects configuration and usage and never d
 
 **Open, and must not be stated as fact until settled:**
 
-- **One free audit per organization every 30 days.** Not confirmed. The page's first FAQ currently asserts this limit as fact. Either confirm the limit is real and enforceable, or remove the sentence before launch.
-- **Databricks and Snowflake coverage.** Both marks are now in the platform row at the owner's request. The confirmed audit scope is compute and block storage reached through cloud read-only access, which does not establish that Databricks or Snowflake spend is audited. Neither is an IaaS cloud, so the row's "FOR YOUR CLOUD" label over five marks implies coverage the confirmed capability set does not support. Resolve before launch by confirming the coverage, relabelling the row to a phrase that does not assert audit scope, or removing the two marks.
+- **One free audit per organization every 30 days.** Still not confirmed, and **removed from the page on 2026-09-09**. The first FAQ had asserted the limit as fact; the sentence is gone rather than softened, because an unenforceable limit stated as fact is the worst of the three options. It goes back verbatim the moment the limit is confirmed and enforceable.
+- **Platform coverage breadth (partly resolved, 2026-09-09).** The row is now labelled **"PLATFORMS AUDITED"**, taken from the sibling ZopNight audit page, which uses `aria-label="Platforms audited"` for the same idea. That replaces "FOR YOUR CLOUD", which asserted five and now seven marks were all clouds. The label is honest about what it claims. What remains open is the underlying fact: the confirmed audit scope is compute and block storage reached through cloud read-only access, which does not by itself establish that Databricks, Snowflake, Kubernetes or OpenShift spend is audited. All four are in the row at the owner's explicit instruction, and the sibling page groups the same seven platforms under the same label, so this is **owner-asserted coverage, not published evidence**. Confirm the operational reality before public launch.
 - Savings are always estimates derived from configuration, usage and pricing. They are never guaranteed, and the customer validates workload needs before acting.
 
 **Constraints:** static single-page campaign with no framework dependencies. Lead delivery is not configured; the form is in preview mode with `endpoint` and `privacyUrl` empty, and the page carries `noindex, nofollow`.
@@ -65,9 +65,35 @@ The audit is strictly read-only. It inspects configuration and usage and never d
 
 ## Evidence on Hand
 
-**There is none, and this is the single most important constraint on future work.** No customer logos, no testimonials, no case studies, no benchmark figures, and no measured outcome statistics exist for this offer. Nothing may be fabricated to fill a proof slot; an absent proof section is correct.
+**Correction, 2026-09-09.** An earlier version of this record said no proof existed. That was wrong: it was written from the campaign brief alone, without checking the production site. **zop.dev publishes real, attributable proof**, and it is reusable here because the company has already put it in public.
 
-What does exist:
+Published on the zop.dev homepage:
+
+- **Named and attributable.** Mahesh Tyagarajan, VP Platform Engineering, McAfee: "Zop has been instrumental in simplifying our multi-cloud operations, a must-have for any organization managing complex cloud environments." Now quoted in the campaign's process band. This is the only named-company proof available and the safest, since it carries no numeric claim.
+- **Anonymized under NDA, and directly about cost auditing.** Director, Cloud Platform, Fortune 1000 software company: "Azure Advisor measured 14% of the opportunity. The other 86% was accumulating silently every month, until zopnight surfaced it in four weeks." Topically the strongest asset, but unused so far for two reasons: the four-week timeline reads against this page's 24-hour promise, and an 86% figure on a lead-generation page risks being read as a guarantee, which the brief prohibits.
+- **Anonymized under NDA.** Cloud platform lead, Fortune Global 2000 FMCG, India: "Manual cost governance turned into a continuously enforced operating model. SAP HANA, in-house apps, third-party systems. We got fast value without re-engineering how anything is built."
+
+`zop.dev/customers` additionally names Flexflow, Linarc and Zopping.
+
+**Now on the campaign page, 2026-09-09.** Sourced from the sibling ZopNight audit variant at `~/Zopnight Landing Page Audit /variant-apple.html` and each figure verified against live zop.dev before use:
+
+- McAfee estate scale under the quote: *12 AWS accounts, 48 Kubernetes clusters, 1,000+ req/sec in production.*
+- A real-engagement stat row in the Deliverable fold: *2,140 resources read across 3 subscriptions, findings 15 to 287, $14,820 recovered monthly.* Carries "Fortune 1000 software company, Azure, four-week window, shared under NDA" plus an in-component caveat that this was a full ZopNight engagement and **not** the free 24-hour audit. That caveat is load-bearing: without it the figures read as a 24-hour outcome.
+
+**Available but deliberately not used.** All published, all barred by this campaign's own brief:
+
+- **ISO 27001:2022, SOC 2 Type II** — the brief prohibits compliance certification claims.
+- **Year-1 ROI 2.8x, payback under 5 months** — the brief prohibits ROI guarantees.
+
+**Present in that variant but published nowhere, so treated as unverified draft copy and not imported:** `$15M+ cloud spend under management`, `154 teams`, `MeitY-empaneled`, `IRDAI`. The variant's marquee strings these together with the genuine certifications, so that line cannot be reused wholesale.
+
+**Team-pedigree marks also found there** (Y Combinator, MIT, Accenture, OYO, HashiCorp) are a different class of claim from customer proof and were left alone. Y Combinator does not appear on live zop.dev at all.
+
+**Still genuinely absent: customer logo files.** The marketing site's `public/` holds only AWS, Azure, GCP, AWS Marketplace and ZopDev's own marks. A customer logo strip cannot be built without sourcing third-party trademarks and confirming permission, so requests for one stay blocked on that, not on design.
+
+No benchmark figures or measured outcome statistics beyond the quotes above exist. Nothing may be fabricated to fill a proof slot; an absent proof section is still better than an invented one.
+
+What else exists:
 
 - An illustrative example report on the campaign page. Its figures are format demonstrations, explicitly not customer results and not guaranteed savings, and are labelled as such on the page.
 - Official ZopDev logo files, and official AWS, Azure, Google Cloud and Databricks marks from the ZopDev Brand Kit. The Snowflake mark was downloaded from the CC0-licensed Simple Icons package, which cites snowflake.com/brand-guidelines as its source; its brand hex #29B5E8 came from that package's data rather than from memory. Simple Icons independently lists Databricks as #FF3621, matching the Brand Kit asset already in use.
@@ -86,4 +112,10 @@ What does exist:
 
 WCAG 2.1 A/AA is the working standard, enforced on this campaign by an automated axe-core gate over both desktop and mobile in `verify-cloud-audit.cjs`. Reduced-motion preferences are respected. Automated coverage plus visual inspection is not an accessibility certification and should not be described as one.
 
-Two conventions this project has already had to learn: ink text on the orange accent is the accessible pairing at 7.1:1, while light text on orange fails at 2.4:1; and hero entrance motion animates transform only, never opacity, because an element measured mid-fade reads as low-contrast and fails the contrast gate.
+Three conventions this project has already had to learn:
+
+1. Ink text on the orange accent is the accessible pairing at 7.1:1, while light text on orange fails at 2.4:1.
+2. **Entrance motion animates transform only, never opacity.** An element measured mid-fade reads as a low-contrast foreground and fails the contrast gate. This first bit the hero; on 2026-09-09 it bit the process-step reveal the same way, at 768 and 390 only, where clicking a report view scrolls the steps into the viewport just as axe samples them. Both now translate without fading. Do not add a fade back to either.
+3. **11px is the floor for functional text, 12px for values and short prose.** The small end of the scale had drifted down to 5.7px on the report masthead, with roughly sixty declarations between 8px and 10px. Weight, tracking and colour carry the label-versus-value distinction that size alone used to carry.
+
+A note on the contrast gate itself: axe-core cannot resolve a foreground over a dashed-border region or a `mix-blend-mode` layer, and reports neither a pass nor a violation there. The bundled Impeccable detector computes those pairs statically and caught two real failures axe had cleared. Run both.
