@@ -36,6 +36,9 @@
     <symbol id="instance" viewBox="0 0 24 24"><path d="M3 5h18v6H3zM3 13h18v6H3zM6.5 8h.01M6.5 16h.01"/></symbol>
     <symbol id="trend" viewBox="0 0 24 24"><path d="M6 18 18 6M18 6h-8M18 6v8"/></symbol>
     <symbol id="plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="card" viewBox="0 0 24 24"><path d="M3 6h18v12H3zM3 10h18M6 14h4"/></symbol>
+    <symbol id="cloud" viewBox="0 0 24 24"><path d="M6 19a5 5 0 1 1 .6-10A6 6 0 0 1 18 7.5 5.8 5.8 0 0 1 18 19Z"/></symbol>
+    <symbol id="exit" viewBox="0 0 24 24"><path d="M14 4h5v16h-5M11 12H3M6.5 8 3 12l3.5 4"/></symbol>
   </svg>
   <header class="site-header">
     <div class="container header-inner">
@@ -53,8 +56,8 @@
         <a class="text-link" href="#sample">See what you get <svg class="icon" aria-hidden="true"><use href="#arrow"/></svg></a>
       </div>
       <p class="micro timing"><svg class="icon"><use href="#clock"/></svg> Results within 24 hours after read-only access is ready.</p>
-      <div class="reassurance"><span><svg class="icon"><use href="#check"/></svg> No credit card</span><span><svg class="icon"><use href="#check"/></svg> No changes to your cloud</span><span><svg class="icon"><use href="#check"/></svg> No obligation</span></div>
-      <div class="providers"><span class="providers-label">PLATFORMS AUDITED</span><span class="provider"><img class="p-logo p-logo--aws" src="assets/logo-aws.svg" alt="AWS" width="25" height="15"></span><span class="provider"><img class="p-logo p-logo--azure" src="assets/logo-azure.svg" alt="" width="18" height="17"> Azure</span><span class="provider"><img class="p-logo p-logo--gcp" src="assets/logo-gcp.svg" alt="" width="20" height="16"> Google Cloud</span><span class="provider"><img class="p-logo p-logo--databricks" src="assets/logo-databricks.svg" alt="" width="18" height="19"> Databricks</span><span class="provider"><img class="p-logo p-logo--snowflake" src="assets/logo-snowflake.svg" alt="" width="19" height="18"> Snowflake</span><span class="provider"><img class="p-logo p-logo--k8s" src="assets/logo-kubernetes.svg" alt="" width="18" height="18"> Kubernetes</span><span class="provider"><img class="p-logo p-logo--openshift" src="assets/logo-openshift.svg" alt="" width="18" height="18"> OpenShift</span></div>
+      <div class="reassurance"><span><svg class="icon" aria-hidden="true"><use href="#card"/></svg> No credit card</span><span><svg class="icon" aria-hidden="true"><use href="#cloud"/></svg> No changes to your cloud</span><span><svg class="icon" aria-hidden="true"><use href="#exit"/></svg> No obligation</span></div>
+      <div class="providers"><span class="providers-label">PLATFORMS AUDITED</span><span class="provider"><img class="p-logo p-logo--aws" src="assets/logo-aws.svg" alt="AWS" width="25" height="15"><span class="ptag" aria-hidden="true">AWS</span></span><span class="provider"><img class="p-logo p-logo--azure" src="assets/logo-azure.svg" alt="Microsoft Azure" width="18" height="17"><span class="ptag" aria-hidden="true">Azure</span></span><span class="provider"><img class="p-logo p-logo--gcp" src="assets/logo-gcp.svg" alt="Google Cloud" width="20" height="16"><span class="ptag" aria-hidden="true">Google Cloud</span></span><span class="provider"><img class="p-logo p-logo--databricks" src="assets/logo-databricks.svg" alt="Databricks" width="18" height="19"><span class="ptag" aria-hidden="true">Databricks</span></span><span class="provider"><img class="p-logo p-logo--snowflake" src="assets/logo-snowflake.svg" alt="Snowflake" width="19" height="18"><span class="ptag" aria-hidden="true">Snowflake</span></span><span class="provider"><img class="p-logo p-logo--k8s" src="assets/logo-kubernetes.svg" alt="Kubernetes" width="18" height="18"><span class="ptag" aria-hidden="true">Kubernetes</span></span><span class="provider"><img class="p-logo p-logo--openshift" src="assets/logo-openshift.svg" alt="Red Hat OpenShift" width="18" height="18"><span class="ptag" aria-hidden="true">OpenShift</span></span></div>
     </section>
 
     <section id="sample" class="deliverable container" aria-labelledby="deliverable-heading">
@@ -106,7 +109,7 @@
           <div class="process-step"><div class="step-top"><span class="step-icon"><svg class="icon"><use href="#lock"/></svg></span><span class="step-line" aria-hidden="true"></span></div><span class="step-number">02 / CONNECT</span><h3>Grant read-only access.</h3><p>Your team reviews the permissions. The 24-hour clock starts when the required access is ready.</p></div>
           <div class="process-step"><div class="step-top"><span class="step-icon final-icon"><svg class="icon"><use href="#check"/></svg></span><span class="delivery-badge">WITHIN 24 HOURS</span></div><span class="step-number">03 / UNDERSTAND</span><h3>Get your savings shortlist.</h3><p>Receive the free results. Decide what to investigate and whether you need the full report.</p></div>
         </div>
-        <div class="access-note"><svg class="icon"><use href="#lock"/></svg><p><strong>Your infrastructure stays yours.</strong> You control the access and can revoke it. The audit does not make changes to your resources.</p></div>
+        <div class="access-note"><p><strong>Your infrastructure stays yours.</strong> You control the access and can revoke it. The audit does not make changes to your resources.</p></div>
         <figure class="proof">
           <div class="proof-artifact">
             <div class="artf-bar"><i aria-hidden="true"></i><i aria-hidden="true"></i><i aria-hidden="true"></i><span>estate-summary.xlsx</span></div>
@@ -147,7 +150,11 @@
           <noscript><p class="preview-note">Enable JavaScript to try the request form. This preview does not send audit requests.</p></noscript>
           <p id="form-status" class="form-status" role="status" aria-live="polite" tabindex="-1" hidden></p>
         </form>
-        <div class="form-bottom"><svg class="icon"><use href="#clock"/></svg><span>Free results within 24 hours<br><small>after read-only access is ready.</small></span><svg class="icon lock-end"><use href="#lock"/></svg></div>
+        <ul class="form-bottom">
+          <li><svg class="icon" aria-hidden="true"><use href="#check"/></svg><span><strong>Free audit</strong>No card, no obligation.</span></li>
+          <li><svg class="icon" aria-hidden="true"><use href="#clock"/></svg><span><strong>Within 24 hours</strong>Once access is ready.</span></li>
+          <li><svg class="icon" aria-hidden="true"><use href="#lock"/></svg><span><strong>Read-only</strong>Revoke it any time.</span></li>
+        </ul>
       </div>
     </section>
     <div class="closing-line container"><span class="orange-dot"></span><p>You’re already paying for your cloud.<br class="mobile-break"> Know what’s worth keeping.</p></div>
