@@ -17,6 +17,8 @@ const TYPES = {
   '.png': 'image/png',
   '.jpg': 'image/jpeg',
   '.jpeg': 'image/jpeg',
+  // The cut-out portrait: alpha, and a tenth the bytes of the PNG.
+  '.webp': 'image/webp',
 };
 const ALLOWED = new Set(['/index.html', '/styles.css', '/audit.js']);
 
