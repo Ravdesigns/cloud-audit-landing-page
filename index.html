@@ -62,6 +62,7 @@
 
     <section id="sample" class="deliverable container" aria-labelledby="deliverable-heading">
       <div class="section-heading"><div><div class="eyebrow"><span class="orange-square"></span> WHAT LANDS IN YOUR INBOX</div><h2 id="deliverable-heading" data-copy="deliverableHeading">Real resources. Clear savings.</h2></div><span class="sample-label">ILLUSTRATIVE REPORT PREVIEW</span></div>
+      <div class="deliverable-split">
       <div class="report-stage">
         <article class="audit-report" aria-label="Interactive example cloud audit report">
           <div class="report-masthead"><img src="assets/zopdev-logo-dark.svg" alt="Zopdev" width="87" height="31"><span>YOUR FREE AUDIT / EXAMPLE DATA</span><svg class="icon"><use href="#report"/></svg></div>
@@ -69,23 +70,33 @@
             <div><p class="report-kicker">CLOUD SAVINGS AUDIT</p><h3>A smaller bill starts here.</h3><p class="report-subtitle">Your highest-value opportunities, in one place.</p></div>
             <div class="report-total"><span>Potential monthly savings</span><strong id="sample-total">$4,280<span>/mo</span></strong><span class="estimate-label">Across the 3 examples below</span></div>
           </div>
+          <div id="report-body" role="tabpanel" aria-labelledby="view-savings">
           <div class="report-tabs" role="tablist" aria-label="Example resource category"><button type="button" id="compute-tab" role="tab" aria-selected="true" aria-controls="findings-panel" data-category="compute">Compute <span>03</span></button><button type="button" id="storage-tab" role="tab" aria-selected="false" aria-controls="findings-panel" tabindex="-1" data-category="storage">Block storage <span>03</span></button><span class="report-period">90-DAY USAGE WINDOW</span></div>
           <div id="findings-panel" role="tabpanel" aria-labelledby="compute-tab" tabindex="0">
-            <div class="table-wrap"><table><caption class="sr-only">Illustrative savings opportunities. These figures are not customer results.</caption><thead><tr><th scope="col">Resource / finding</th><th scope="col">Usage evidence</th><th scope="col">Est. savings / mo</th></tr></thead><tbody id="findings-body">
+            <div class="table-wrap"><table><caption class="sr-only">Illustrative savings opportunities. These figures are not customer results.</caption><thead><tr><th scope="col">Resource / finding</th><th scope="col" class="report-head-evidence">Usage evidence</th><th scope="col">Est. savings / mo</th></tr></thead><tbody id="findings-body">
               <tr><td><span class="resource-name"><svg class="icon resource-icon" aria-hidden="true"><use href="#instance"/></svg> api-worker-prod-03</span><span class="resource-detail">Oversized compute instance</span><span class="mobile-evidence">8% average CPU</span></td><td><span class="evidence-meter"><i style="--usage:8%"></i></span><span class="evidence-value">8% average CPU</span></td><td class="saving">$2,480 <svg class="icon saving-trend" aria-hidden="true"><use href="#trend"/></svg></td></tr>
               <tr><td><span class="resource-name"><svg class="icon resource-icon" aria-hidden="true"><use href="#instance"/></svg> staging-runner-02</span><span class="resource-detail">Running outside working hours</span><span class="mobile-evidence">4% average CPU</span></td><td><span class="evidence-meter"><i style="--usage:4%"></i></span><span class="evidence-value">4% average CPU</span></td><td class="saving">$1,160 <svg class="icon saving-trend" aria-hidden="true"><use href="#trend"/></svg></td></tr>
               <tr><td><span class="resource-name"><svg class="icon resource-icon" aria-hidden="true"><use href="#instance"/></svg> batch-worker-07</span><span class="resource-detail">Oversized compute instance</span><span class="mobile-evidence">12% average CPU</span></td><td><span class="evidence-meter"><i style="--usage:12%"></i></span><span class="evidence-value">12% average CPU</span></td><td class="saving">$640 <svg class="icon saving-trend" aria-hidden="true"><use href="#trend"/></svg></td></tr>
             </tbody></table></div>
+          </div>
+          <div id="waste-panel" class="waste-panel" hidden>
+            <div class="wp-rows">
+              <div><span class="wp-name">Idle resources</span><span class="wp-count">34</span><span class="wp-cost">$2,180<i>/mo</i></span></div>
+              <div><span class="wp-name">Orphaned resources</span><span class="wp-count">12</span><span class="wp-cost">$760<i>/mo</i></span></div>
+            </div>
+            <p class="wp-note">Counts and estimated cost only. The optional full report names each of these resources.</p>
+          </div>
           </div>
           <div class="report-footer"><span><span class="status-dot"></span> Resource names. Evidence. Estimated savings.</span><span>01 / FREE AUDIT</span></div>
         </article>
         <div class="report-stamp"><svg class="icon"><use href="#lock"/></svg> READ-ONLY BY DESIGN</div>
         <p class="example-disclaimer">Example data to show the report format. Your findings and savings will depend on your cloud.</p>
       </div>
-      <div class="deliverable-grid">
-        <div><h3>Your top 20 savings</h3><p>Named compute and block-storage resources, ranked by estimated savings. A shortlist your team can check.</p></div>
-        <div><h3>The evidence behind them</h3><p>Usage metrics from the available 90-day history, plus security and compliance flags on those same resources.</p></div>
-        <div><h3>The wider waste picture</h3><p>A count and cost estimate for idle and orphaned resources. The full report names those additional findings.</p></div>
+      <div class="deliverable-grid" role="tablist" aria-label="What the free audit includes" aria-orientation="vertical">
+        <button type="button" role="tab" id="view-savings" class="dg-item" aria-selected="true" aria-controls="report-body" data-view="savings"><h3>Your top 20 savings</h3><p>Named compute and block-storage resources, ranked by estimated savings. A shortlist your team can check.</p></button>
+        <button type="button" role="tab" id="view-evidence" class="dg-item" aria-selected="false" aria-controls="report-body" tabindex="-1" data-view="evidence"><h3>The evidence behind them</h3><p>Usage metrics from the available 90-day history, plus security and compliance flags on those same resources.</p></button>
+        <button type="button" role="tab" id="view-waste" class="dg-item" aria-selected="false" aria-controls="report-body" tabindex="-1" data-view="waste"><h3>The wider waste picture</h3><p>A count and cost estimate for idle and orphaned resources. The full report names those additional findings.</p></button>
+      </div>
       </div>
     </section>
 
@@ -102,13 +113,15 @@
     </section>
 
     <section class="process" aria-labelledby="process-heading">
-      <div class="container">
-        <div class="process-intro"><div class="eyebrow"><span class="orange-square"></span> A SMALL ASK. A USEFUL ANSWER.</div><h2 id="process-heading" data-copy="processHeading">You keep control.<br>We find the waste.</h2><p>We inspect your cloud through read-only access.<br>No deployments. No resource changes.</p></div>
+      <div class="container process-split">
+        <div class="process-intro"><div class="eyebrow"><span class="orange-square"></span> A SMALL ASK. A USEFUL ANSWER.</div><h2 id="process-heading" data-copy="processHeading">You keep control.<br>We find the waste.</h2><p>We inspect your cloud through read-only access. No deployments. No resource changes.</p></div>
         <div class="process-flow">
           <div class="process-step"><div class="step-top"><span class="step-icon"><svg class="icon"><use href="#report"/></svg></span><span class="step-line" aria-hidden="true"></span></div><span class="step-number">01 / REQUEST</span><h3>Tell us about your cloud.</h3><p>Share your work email and cloud provider. We’ll send the access setup instructions.</p></div>
           <div class="process-step"><div class="step-top"><span class="step-icon"><svg class="icon"><use href="#lock"/></svg></span><span class="step-line" aria-hidden="true"></span></div><span class="step-number">02 / CONNECT</span><h3>Grant read-only access.</h3><p>Your team reviews the permissions. The 24-hour clock starts when the required access is ready.</p></div>
           <div class="process-step"><div class="step-top"><span class="step-icon final-icon"><svg class="icon"><use href="#check"/></svg></span><span class="delivery-badge">WITHIN 24 HOURS</span></div><span class="step-number">03 / UNDERSTAND</span><h3>Get your savings shortlist.</h3><p>Receive the free results. Decide what to investigate and whether you need the full report.</p></div>
         </div>
+      </div>
+      <div class="container">
         <div class="access-note"><p><strong>Your infrastructure stays yours.</strong> You control the access and can revoke it. The audit does not make changes to your resources.</p></div>
         <figure class="proof">
           <div class="proof-artifact">
