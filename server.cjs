@@ -19,8 +19,9 @@ const TYPES = {
   '.jpeg': 'image/jpeg',
   // The cut-out portrait: alpha, and a tenth the bytes of the PNG.
   '.webp': 'image/webp',
+  '.txt': 'text/plain; charset=utf-8',
 };
-const ALLOWED = new Set(['/index.html', '/styles.css', '/audit.js']);
+const ALLOWED = new Set(['/index.html', '/styles.css', '/audit.js', '/robots.txt']);
 
 http.createServer((req, res) => {
   const url = new URL(req.url, 'http://localhost');

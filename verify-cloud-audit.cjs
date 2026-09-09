@@ -109,7 +109,14 @@ let browser;
   // Mock the future relay to verify network failure and durable-receipt behavior.
   const livePage = await browser.newPage();
   livePage.on('pageerror', error=>errors.push(error.message));
-  const script = fs.readFileSync(path.join(root,'audit.js'),'utf8').replace("endpoint: '', privacyUrl: ''", "endpoint: 'https://audit-relay.example/lead', privacyUrl: 'https://audit-relay.example/privacy'");
+  const rawScript = fs.readFileSync(path.join(root,'audit.js'),'utf8');
+  const script = rawScript
+    .replace("endpoint: ''", "endpoint: 'https://audit-relay.example/lead'")
+    .replace("privacyUrl: ''", "privacyUrl: 'https://audit-relay.example/privacy'")
+    .replace("googleAdsSendTo: ''", "googleAdsSendTo: 'AW-000/qa'");
+  assert.notEqual(script, rawScript, 'Live-mode patch did not apply. AUDIT_CONFIG shape changed; update these replacements.');
+  assert.match(script, /endpoint: 'https:/, 'endpoint patch missing');
+  assert.match(script, /privacyUrl: 'https:/, 'privacyUrl patch missing');
   await livePage.route('**/audit.js',route=>route.fulfill({contentType:'text/javascript',body:script}));
   let payloads=[], mode='error';
   await livePage.route('https://audit-relay.example/lead',async route=>{
@@ -118,17 +125,27 @@ let browser;
     payloads.push(request.postDataJSON());
     await route.fulfill({status:mode==='error'?500:200,contentType:'application/json',headers:{'access-control-allow-origin':'*'},body:JSON.stringify({success:mode==='success'})});
   });
+  await livePage.addInitScript(()=>{
+    window.__conv=[];
+    window.gtag=(...a)=>{ if(a[0]==='event') window.__conv.push(a[1]); };
+    window.fbq=(...a)=>{ if(a[0]==='track') window.__conv.push('fb:'+a[1]); };
+  });
   await livePage.goto(base+'/?utm_source=qa&utm_campaign=cloud-audit');
+  assert.equal(await livePage.evaluate(()=>!!document.querySelector('#form-terms a[href^="https:"]')),true,'Privacy notice link missing when privacyUrl is set');
+  assert.equal(await livePage.evaluate(()=>document.getElementById('audit-form').getAttribute('action')),'https://audit-relay.example/lead','Form action not set for the no-JS path');
   await livePage.locator('#full-name').fill('Preview Visitor');
   await livePage.locator('#work-email').fill('preview@example.com');
   await livePage.locator('#cloud-provider').selectOption('AWS');
   await livePage.locator('#audit-form button[type=submit]').click();
   await livePage.waitForFunction(()=>document.getElementById('form-status').dataset.state==='error');
   assert.equal(await livePage.locator('#work-email').inputValue(),'preview@example.com');
+  assert.deepEqual(await livePage.evaluate(()=>window.__conv),[],'Conversion fired on a failed request');
+  assert.equal(await livePage.evaluate(()=>location.search.includes('submitted')),false,'Success URL set on a failed request');
   mode='unconfirmed';
   await livePage.locator('#audit-form button[type=submit]').click();
   await livePage.waitForFunction(()=>document.getElementById('audit-form').getAttribute('aria-busy')===null);
   assert.equal(await livePage.locator('#form-status').getAttribute('data-state'),'error');
+  assert.deepEqual(await livePage.evaluate(()=>window.__conv),[],'Conversion fired on an unconfirmed 200');
   mode='success';
   await livePage.locator('#audit-form button[type=submit]').click();
   await livePage.waitForFunction(()=>document.getElementById('form-status').dataset.state==='success');
@@ -137,7 +154,16 @@ let browser;
   assert.equal(payloads[0].requestId,payloads[2].requestId);
   assert.equal(payloads[2].utm_source,'qa');
   assert.equal(payloads[2].campaign,'free-cloud-audit-24h');
+  const conv = await livePage.evaluate(()=>window.__conv);
+  assert.deepEqual(conv,['generate_lead','conversion','fb:Lead'],'Wrong conversion signals: '+JSON.stringify(conv));
+  assert.equal(await livePage.evaluate(()=>new URL(location.href).searchParams.get('submitted')),'1','Success URL marker missing');
+  assert.equal(await livePage.evaluate(()=>window.dataLayer.filter(e=>e.event==='audit_request_submitted').length),1,'dataLayer event not pushed exactly once');
+  assert.equal(await livePage.evaluate(()=>window.dataLayer.find(e=>e.event==='audit_request_submitted').request_id),payloads[2].requestId,'dataLayer request_id does not match the payload');
+  // Re-firing the same id must not double-count.
+  await livePage.evaluate(id=>fireConversion(id), payloads[2].requestId);
+  assert.deepEqual(await livePage.evaluate(()=>window.__conv),conv,'Conversion double-counted on a repeat fire');
   checks.push('Mock relay: server errors and unconfirmed 200 responses preserve details; only confirmed success clears the form; retries reuse request ID and ad attribution survives');
+  checks.push('Conversion fires once on confirmed receipt only, never on failure or an unconfirmed 200, deduplicated by request ID, with a trackable success URL and a privacy link');
   assert.deepEqual(errors,[]);
   checks.push('No browser JavaScript errors');
   fs.writeFileSync(path.join(out,'results.json'),JSON.stringify({passed:true,checks},null,2));

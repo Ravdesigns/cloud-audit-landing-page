@@ -1,0 +1,14 @@
+# Paid-traffic landing page. Deliberately kept out of the organic index, while
+# staying open to the ad platforms' own crawlers so landing-page quality and
+# policy review can still evaluate it.
+User-agent: *
+Disallow: /
+
+User-agent: AdsBot-Google
+Allow: /
+
+User-agent: AdsBot-Google-Mobile
+Allow: /
+
+User-agent: adidxbot
+Allow: /

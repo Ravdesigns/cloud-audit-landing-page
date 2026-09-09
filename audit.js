@@ -1,8 +1,61 @@
-/* Set both values only after the lead destination and privacy notice are approved.
- * Endpoint contract: POST JSON, then return 2xx JSON { success: true } only when
- * the lead is durably accepted. Preview mode never sends or stores personal data.
+/* THE THREE VALUES A LAUNCH NEEDS. Nothing else has to change to go live.
+ *
+ *   endpoint    Where the lead goes. Contract: accepts POST JSON, returns 2xx
+ *               JSON { success: true } ONLY once the lead is durably stored.
+ *               Anything else is treated as a failure and the visitor keeps
+ *               their typed details. Until this is an https URL the form is in
+ *               preview mode: it validates, sends nothing, stores nothing, and
+ *               says so. Also set the same URL as the <form action> in
+ *               index.html so the form still works with JavaScript blocked.
+ *   privacyUrl  Public privacy notice. Required by the ad platforms' lead
+ *               policies, and by GDPR if the campaign runs in the EU or UK.
+ *               Renders as a link under the form as soon as it is set, whether
+ *               or not the endpoint is.
+ *   conversion  Ad-platform conversion identifiers. Leave any of them empty and
+ *               that platform is simply not notified. See fireConversion below.
  */
-const AUDIT_CONFIG = Object.freeze({ endpoint: '', privacyUrl: '', campaign: 'free-cloud-audit-24h' });
+const AUDIT_CONFIG = Object.freeze({
+  endpoint: '',
+  privacyUrl: '',
+  campaign: 'free-cloud-audit-24h',
+  conversion: Object.freeze({
+    // Google Ads: 'AW-XXXXXXXXX/AbC-D_efG-h12_34-567'
+    googleAdsSendTo: '',
+    // GA4 event name. Mark it as a key event in GA4 to import it into Ads.
+    ga4Event: 'generate_lead',
+    // Meta: fires the standard 'Lead' event when the Pixel is present.
+    metaEvent: 'Lead',
+  }),
+});
+
+/* Tell the ad platforms a lead landed, once, keyed on the request id so a retry
+ * cannot double-count. Every call is guarded: with no tag manager on the page
+ * this is a no-op, which is what keeps preview mode silent. */
+const reported = new Set();
+function fireConversion(id) {
+  if (!id || reported.has(id)) return;
+  reported.add(id);
+  const c = AUDIT_CONFIG.conversion;
+  const detail = { campaign: AUDIT_CONFIG.campaign, request_id: id, form: 'free-cloud-audit' };
+  // Tag Manager and anything else listening on the data layer.
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({ event: 'audit_request_submitted', ...detail });
+  if (typeof window.gtag === 'function') {
+    if (c.ga4Event) window.gtag('event', c.ga4Event, { ...detail, transaction_id: id });
+    if (c.googleAdsSendTo) window.gtag('event', 'conversion', { send_to: c.googleAdsSendTo, transaction_id: id });
+  }
+  if (typeof window.fbq === 'function' && c.metaEvent) {
+    window.fbq('track', c.metaEvent, { content_name: AUDIT_CONFIG.campaign }, { eventID: id });
+  }
+  // A distinct URL for the success state, so a destination-based conversion
+  // goal works as a fallback and the step is visible in analytics. replaceState
+  // keeps the back button on the page the visitor arrived from.
+  try {
+    const url = new URL(location.href);
+    url.searchParams.set('submitted', '1');
+    history.replaceState({ submitted: true }, '', url);
+  } catch (error) { /* history is unavailable in some embedded webviews */ }
+}
 
 const EXAMPLES = {
   compute: {
@@ -223,18 +276,25 @@ const status = document.getElementById('form-status');
 const submit = form.querySelector('button[type="submit"]');
 const submitLabel = document.getElementById('submit-label');
 submit.disabled = false;
-const live = /^https:\/\//.test(AUDIT_CONFIG.endpoint) && /^https:\/\//.test(AUDIT_CONFIG.privacyUrl);
+/* Sending and the privacy notice are separate concerns. The old check required
+ * both before either happened, which meant a configured privacy notice stayed
+ * invisible while the endpoint was still being approved. */
+const live = /^https:\/\//.test(AUDIT_CONFIG.endpoint);
+const hasPrivacy = /^https:\/\//.test(AUDIT_CONFIG.privacyUrl);
 let requestId;
 let inFlight = false;
 
-if (live) {
-  submitLabel.textContent = 'Get my free audit';
+if (live) submitLabel.textContent = 'Get my free audit';
+if (hasPrivacy) {
   const privacyLink = document.createElement('a');
   privacyLink.href = AUDIT_CONFIG.privacyUrl;
   privacyLink.textContent = 'Privacy notice';
   privacyLink.style.textDecoration = 'underline';
   document.getElementById('form-terms').append(' ', privacyLink, '.');
 }
+/* With JavaScript blocked the button never enables and the form posts natively
+ * to its action, so the noscript block in index.html has to match reality. */
+if (live) form.setAttribute('action', AUDIT_CONFIG.endpoint);
 
 function showStatus(message, state) {
   status.textContent = message;
@@ -285,6 +345,9 @@ form.addEventListener('submit', async event => {
     const result = await response.json().catch(() => null);
     if (!response.ok || result?.success !== true) throw new Error('Lead receipt was not confirmed');
     showStatus('Request received. We’ll email your read-only access setup instructions. Your free results will arrive within 24 hours after access is ready.', 'success');
+    // Only here, after the endpoint has confirmed the lead is stored. Never on
+    // a click, never on a validation pass, never on an unconfirmed 200.
+    fireConversion(requestId);
     form.reset();
     requestId = undefined;
   } catch (error) {
@@ -321,6 +384,22 @@ if (stepFlow && steps.length && 'IntersectionObserver' in window
   // Anything already on screen at load reveals immediately, and a late
   // safety net guarantees nothing is still hidden if the observer misfires.
   setTimeout(() => steps.forEach(step => step.classList.add('is-in')), 2500);
+}
+
+/* Every call to action is an anchor to the form, which scrolled the reader
+   there and then left them to find the first field. On a pointer device the
+   cursor is already elsewhere, so the field takes focus for them. Not on
+   touch: raising the keyboard over the form the reader just arrived at hides
+   the thing they came to look at. */
+if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
+  document.querySelectorAll('a[href="#request"]').forEach(link => {
+    link.addEventListener('click', () => {
+      const firstField = document.getElementById('full-name');
+      if (!firstField) return;
+      // After the smooth scroll settles, and without fighting it.
+      setTimeout(() => firstField.focus({ preventScroll: true }), 620);
+    });
+  });
 }
 
 /* The sticky bar is the phone's persistent call to action, so it stays out of

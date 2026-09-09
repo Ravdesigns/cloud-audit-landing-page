@@ -163,7 +163,7 @@
       <div class="container">
         <figure class="proof proof--portrait">
           <div class="proof-portrait"><img src="assets/portrait-cutout.webp" alt="Placeholder image. Not a photograph of the person quoted." width="760" height="663" loading="lazy" decoding="async"><span class="proof-portrait-flag">Placeholder image</span></div>
-          <div class="proof-media"><img class="proof-texture" src="assets/proof-texture.jpg" alt="" width="1200" height="800" loading="lazy" decoding="async"></div>
+          <div class="proof-media"><img class="proof-texture" src="assets/proof-texture.webp" alt="" width="1200" height="800" loading="lazy" decoding="async"></div>
           <blockquote><p>Zop has been instrumental in simplifying our multi-cloud operations, a must-have for any organization managing complex cloud environments.</p></blockquote>
           <figcaption><span class="proof-avatar" aria-hidden="true">MT</span><span class="proof-who"><span class="proof-author">Mahesh Tyagarajan</span> <span class="proof-role">VP Platform Engineering, McAfee</span></span></figcaption>
         </figure>
@@ -182,14 +182,17 @@
       </div>
       <div id="request" class="request-card">
         <h2 data-copy="formHeading">A clearer cloud bill<br>starts here.</h2><p class="form-lead">Tell us where to send your setup instructions.</p>
-        <form id="audit-form" aria-describedby="form-terms form-status">
+        <!-- Set action to the same URL as AUDIT_CONFIG.endpoint at launch. audit.js
+               sets it too, but only the attribute here survives JavaScript being
+               blocked, which is the case this fallback exists for. -->
+          <form id="audit-form" method="post" aria-describedby="form-terms form-status">
           <label for="full-name">Full name</label><input id="full-name" name="name" type="text" autocomplete="name" placeholder="Alex Morgan" maxlength="100" required>
           <label for="work-email">Work email</label><input id="work-email" name="email" type="email" autocomplete="email" placeholder="alex@company.com" maxlength="254" required>
           <label for="cloud-provider">Cloud provider</label><select id="cloud-provider" name="provider" required><option value="" disabled selected>Select your cloud</option><option>AWS</option><option>Microsoft Azure</option><option>Google Cloud</option><option>More than one cloud</option></select>
           <div class="honeypot" aria-hidden="true"><label for="company-url">Leave this field empty</label><input id="company-url" name="company_url" type="text" tabindex="-1" autocomplete="off"></div>
           <button class="button form-submit" type="submit" disabled><span id="submit-label">Preview my audit request</span><svg class="icon"><use href="#arrow"/></svg></button>
           <p class="form-terms" id="form-terms">We’ll use these details to coordinate your audit. No cloud credentials are requested here.</p>
-          <noscript><p class="preview-note">Enable JavaScript to try the request form. This preview does not send audit requests.</p></noscript>
+          <noscript><p class="preview-note">This form needs JavaScript. Email <a href="mailto:hello@zop.dev?subject=Free%20cloud%20cost%20audit&amp;body=Cloud%20provider%3A%0AName%3A%0A" style="text-decoration:underline">hello@zop.dev</a> with your cloud provider and we’ll set the audit up by hand.</p></noscript>
           <p id="form-status" class="form-status" role="status" aria-live="polite" tabindex="-1" hidden></p>
         </form>
         <ul class="form-bottom">
