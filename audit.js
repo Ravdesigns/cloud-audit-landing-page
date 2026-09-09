@@ -157,20 +157,29 @@ function applyView(tab, keepVisible) {
 }
 
 /* Hold the deck at the tallest card so switching never shifts the page below
-   it. Measured after layout because each card is a different height. */
+   it. Measured after layout because each card is a different height. This runs
+   at every width: on mobile the pointers sit under the deck, so a resize moved
+   the button the reader had just tapped.
+
+   Each card is measured on its own rather than with all three unhidden. They
+   share one grid cell, so measuring them together lets the row size to the
+   flexible chart's minimum instead of the card's comfortable height, which
+   under-measured the evidence card by 113px at 320px. */
 function lockDeckHeight() {
-  if (!deck || running.length || matchMedia('(max-width:1000px)').matches) return;
+  if (!deck || running.length) return;
   const shown = views.find(view => !view.hidden);
   deck.style.removeProperty('--deck-h');
-  const tallest = views.reduce((max, view) => {
-    view.hidden = false;
-    const height = view.offsetHeight;
-    view.hidden = view !== shown;
-    return Math.max(max, height);
-  }, 0);
+  let tallest = 0;
+  views.forEach(view => {
+    views.forEach(other => { other.hidden = other !== view; });
+    tallest = Math.max(tallest, view.offsetHeight);
+  });
+  views.forEach(view => { view.hidden = view !== shown; });
   if (tallest) deck.style.setProperty('--deck-h', `${Math.ceil(tallest)}px`);
 }
 
+/* Both tablists: click to select, arrow keys to move. The deliverable pointers
+   are a vertical tablist, so Down and Up lead and Right and Left also work. */
 viewTabs.forEach((tab, index) => {
   tab.addEventListener('click', () => activateView(tab));
   tab.addEventListener('keydown', event => {
@@ -203,7 +212,11 @@ tabs.forEach((tab, index) => {
 activateCategory(tabs[0]);
 lockDeckHeight();
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(lockDeckHeight);
-addEventListener('resize', lockDeckHeight);
+let measureTimer;
+addEventListener('resize', () => {
+  clearTimeout(measureTimer);
+  measureTimer = setTimeout(lockDeckHeight, 150);
+});
 
 const form = document.getElementById('audit-form');
 const status = document.getElementById('form-status');
@@ -310,10 +323,20 @@ if (stepFlow && steps.length && 'IntersectionObserver' in window
   setTimeout(() => steps.forEach(step => step.classList.add('is-in')), 2500);
 }
 
-// Stop the mobile CTA obscuring the form while it is visible.
+/* The sticky bar is the phone's persistent call to action, so it stays out of
+   the way whenever a real one is already on screen: the hero's button at the
+   top of the page, and the form itself at the bottom. Without this it sat
+   under the hero button on first paint, showing the same label twice. */
 if ('IntersectionObserver' in window) {
   const mobileCTA = document.querySelector('.mobile-cta');
-  new IntersectionObserver(entries => {
-    mobileCTA.classList.toggle('is-hidden', entries[0].isIntersecting);
-  }, { threshold: 0 }).observe(document.getElementById('request'));
+  const rivals = [document.getElementById('request'), document.querySelector('.hero-actions')].filter(Boolean);
+  const onScreen = new Set();
+  const ctaObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) onScreen.add(entry.target);
+      else onScreen.delete(entry.target);
+    });
+    mobileCTA.classList.toggle('is-hidden', onScreen.size > 0);
+  }, { threshold: 0 });
+  rivals.forEach(el => ctaObserver.observe(el));
 }

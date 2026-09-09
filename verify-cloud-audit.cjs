@@ -75,14 +75,22 @@ let browser;
     if(width===390) {
       await page.screenshot({path:path.join(out,'mobile-hero.png')});
       await page.locator('.report-stage').screenshot({path:path.join(out,'mobile-report.png')});
+      // The sticky bar stands down whenever a real call to action is already on
+      // screen, so at the top of the page it is hidden behind the hero button.
       await page.evaluate(()=>window.scrollTo(0,0));
+      await page.waitForTimeout(600);
+      assert.equal(await page.locator('.mobile-cta').isVisible(),false,'Sticky bar showed under the hero CTA');
+      // Past the hero it takes over, and it is the only CTA on screen there.
+      await page.evaluate(()=>document.querySelector('.evidence-band').scrollIntoView());
+      await page.waitForTimeout(700);
+      assert.equal(await page.locator('.mobile-cta').isVisible(),true,'Sticky bar missing past the hero');
       await page.locator('.mobile-cta a').click();
       await page.waitForTimeout(700);
-      assert.equal(await page.locator('.mobile-cta').isVisible(),false);
+      assert.equal(await page.locator('.mobile-cta').isVisible(),false,'Sticky bar covered the form');
       await page.screenshot({path:path.join(out,'mobile-form.png')});
     }
   }
-  checks.push('320px, 390px and 768px layouts fit without horizontal page overflow; mobile CTA hides when the request form is visible');
+  checks.push('320px, 390px and 768px layouts fit without horizontal page overflow; sticky mobile CTA stands down under the hero button and over the form, and takes over in between');
   await page.setViewportSize({width:1440,height:1000});
   await page.goto(base);
   await page.addScriptTag({path:require.resolve('axe-core/axe.min.js')});
