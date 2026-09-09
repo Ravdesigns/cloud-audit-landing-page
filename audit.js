@@ -58,13 +58,27 @@ const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
    clicking quickly through the three pointers stuttered. These cancel and
    retarget, run off the main thread, and sequence on a promise instead of a
    timer guessing at a percentage of a keyframe. */
-const EASE_OUT = 'cubic-bezier(.16,1,.3,1)';
-const OUT_MS = 220;
-const IN_MS = 280;
-/* The curve is strongly front-loaded: it covers 95% of the travel in the first
-   44% of the duration. So the outgoing card is down to its last 5% on stage at
-   ~95ms, which is where the incoming card starts. Measured, not guessed. */
-const HANDOVER_MS = 95;
+/* Both halves ease in and out rather than snapping away on a front-loaded
+   ease-out, which spent 40% of the incoming card's travel in its first 35ms:
+   the card appeared near its destination and crept the last stretch instead of
+   reading as arriving from the right.
+
+   The two curves are not the same, though, and that is deliberate. The
+   outgoing card wants a hard ease-in-out: it lingers, accelerates away, and is
+   gone. The incoming card cannot use the same curve, because a steep ease-in
+   leaves it parked off-stage for its first 130ms and the stage sits empty in
+   between. Its curve starts moving sooner and still decelerates into place. */
+const EASE_LEAVE = 'cubic-bezier(.77,0,.175,1)';
+const EASE_ARRIVE = 'cubic-bezier(.4,0,.2,1)';
+const OUT_MS = 340;
+const IN_MS = 400;
+/* Overlapped rather than sequential, and the number comes from the geometry.
+   The incoming card has to travel 5.6% of its distance before its edge clears
+   the stage and it becomes visible at all, which on its curve takes 56ms. At
+   120ms it therefore appears at ~180ms, while the outgoing card is still on
+   stage until ~250ms. That shared stretch is what makes it read as one
+   crossing instead of two moves with a pause between them. */
+const HANDOVER_MS = 120;
 let running = [];
 let settleTimer;
 
@@ -105,22 +119,22 @@ function activateView(tab) {
   const outTilt = tiltOf(outgoing);
   const inTilt = tiltOf(panel);
 
-  // No fade on the way out. The stage clips the card at its own edge, which is
-  // what makes it read as leaving a frame rather than dissolving in place.
+  // No fade on the way out. The card travels clear of the stage's padding box,
+  // so it leaves the frame rather than dissolving in place.
   const outMove = outgoing.animate([
     { transform: `translateX(0) rotate(${outTilt})` },
-    { transform: `translateX(-104%) rotate(${outTilt})` },
-  ], { duration: OUT_MS, easing: EASE_OUT, fill: 'forwards' });
+    { transform: `translateX(-118%) rotate(${outTilt})` },
+  ], { duration: OUT_MS, easing: EASE_LEAVE, fill: 'forwards' });
 
   // fill:backwards holds the incoming card off-stage right through the
   // handover delay, instead of flashing at its resting position first.
   const inMove = panel.animate([
-    { transform: `translateX(104%) rotate(${inTilt})` },
+    { transform: `translateX(118%) rotate(${inTilt})` },
     { transform: `translateX(0) rotate(${inTilt})` },
-  ], { duration: IN_MS, delay: HANDOVER_MS, easing: EASE_OUT, fill: 'backwards' });
+  ], { duration: IN_MS, delay: HANDOVER_MS, easing: EASE_ARRIVE, fill: 'backwards' });
   const inFade = panel.animate(
     [{ opacity: 0 }, { opacity: 1 }],
-    { duration: 90, delay: HANDOVER_MS, easing: 'linear', fill: 'backwards' });
+    { duration: 130, delay: HANDOVER_MS, easing: 'linear', fill: 'backwards' });
 
   running = [outMove, inMove, inFade];
   // cancel() rejects the pending promise, so an interrupted swap lands in the
