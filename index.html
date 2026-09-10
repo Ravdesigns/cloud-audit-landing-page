@@ -49,6 +49,13 @@
   </header>
   <main id="main">
     <section class="hero container" aria-labelledby="hero-heading">
+      <!-- Two depth planes either side of the headline. Decorative, so both are
+           hidden from assistive tech and neither takes pointer events. The far
+           plane sits behind the type, the near plane crosses in front of it. -->
+      <div class="sky sky--far" aria-hidden="true">
+        <img class="cloud cloud--fl" src="assets/cloud-a.webp" alt="" width="1110" height="313" decoding="async">
+        <img class="cloud cloud--fr" src="assets/cloud-b.webp" alt="" width="1126" height="317" decoding="async">
+      </div>
       <h1 id="hero-heading" data-copy="headline">Find your cloud waste.<br>In <span class="highlight">24 hours.</span></h1>
       <p class="hero-lead" data-copy="heroLead">Find your 20 biggest compute and storage savings,<br class="desktop-break"> backed by actual usage. See exactly where to look first.</p>
       <div class="hero-actions">
@@ -56,6 +63,10 @@
         <a class="text-link" href="#sample">See what you get <svg class="icon" aria-hidden="true"><use href="#arrow"/></svg></a>
       </div>
       <div class="reassurance"><span><svg class="icon" aria-hidden="true"><use href="#card"/></svg> No credit card</span><span><svg class="icon" aria-hidden="true"><use href="#cloud"/></svg> No changes to your cloud</span><span><svg class="icon" aria-hidden="true"><use href="#exit"/></svg> No obligation</span></div>
+      <div class="sky sky--near" aria-hidden="true">
+        <img class="cloud cloud--nl" src="assets/cloud-b.webp" alt="" width="1126" height="317" decoding="async">
+        <img class="cloud cloud--nr" src="assets/cloud-a.webp" alt="" width="1110" height="313" decoding="async">
+      </div>
       <div class="providers"><span class="providers-label">PLATFORMS AUDITED</span><span class="provider"><img class="p-logo p-logo--aws" src="assets/logo-aws.svg" alt="AWS" width="25" height="15"><span class="ptag" aria-hidden="true">AWS</span></span><span class="provider"><img class="p-logo p-logo--azure" src="assets/logo-azure.svg" alt="Microsoft Azure" width="18" height="17"><span class="ptag" aria-hidden="true">Azure</span></span><span class="provider"><img class="p-logo p-logo--gcp" src="assets/logo-gcp.svg" alt="Google Cloud" width="20" height="16"><span class="ptag" aria-hidden="true">Google Cloud</span></span><span class="provider"><img class="p-logo p-logo--databricks" src="assets/logo-databricks.svg" alt="Databricks" width="18" height="19"><span class="ptag" aria-hidden="true">Databricks</span></span><span class="provider"><img class="p-logo p-logo--snowflake" src="assets/logo-snowflake.svg" alt="Snowflake" width="19" height="18"><span class="ptag" aria-hidden="true">Snowflake</span></span><span class="provider"><img class="p-logo p-logo--k8s" src="assets/logo-kubernetes.svg" alt="Kubernetes" width="18" height="18"><span class="ptag" aria-hidden="true">Kubernetes</span></span><span class="provider"><img class="p-logo p-logo--openshift" src="assets/logo-openshift.svg" alt="Red Hat OpenShift" width="18" height="18"><span class="ptag" aria-hidden="true">OpenShift</span></span></div>
     </section>
 
