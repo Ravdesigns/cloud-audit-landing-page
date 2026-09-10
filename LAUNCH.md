@@ -40,6 +40,33 @@ attribute the lead to the ad that produced it.
   owner-asserted, not confirmed. It is the claim on the page most likely to
   attract a policy complaint or an awkward customer conversation.
 
+## The A/B test
+
+Three copy variants, reachable two ways so the ad platforms can use whichever
+they prefer:
+
+| Variant | URL | Angle | Headline |
+|---|---|---|---|
+| A (control) | `/` or `/?v=a` or `/a` | Speed | Find your cloud waste. **In 24 hours.** |
+| B | `/?v=b` or `/b` | Specificity | Your 20 biggest savings. **Named**, with the evidence. |
+| C | `/?v=c` or `/c` | Risk reversal | Find your cloud waste. **Without touching it.** |
+
+The tidy aliases need no server route: `server.cjs` already falls through
+unknown paths to `index.html`, and the selector reads `location.pathname`.
+
+**Only the headline and the lead vary.** The call to action is identical in all
+three, deliberately: changing two things at once makes a winner impossible to
+attribute. If you want to test the CTA, run that as a second round against
+whichever headline wins.
+
+The variant is chosen before first paint by a short inline script in the head,
+so there is no flash of the control. Variant A is the default in the CSS
+cascade, so the page still reads correctly with JavaScript blocked and an
+unrecognised value like `?v=z` falls back to A.
+
+Every lead carries `variant` in its payload, and the same value goes into the
+`dataLayer` event, so the CRM and analytics both know which copy converted.
+
 ## Verifying a change
 
 ```bash

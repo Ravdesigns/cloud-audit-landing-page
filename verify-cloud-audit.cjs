@@ -71,6 +71,22 @@ let browser;
     await page.goto(base);
     await page.evaluate(()=>document.fonts.ready);
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth <= innerWidth),true,`Overflow at ${width}px`);
+    /* The full-bleed testimonial texture uses right:calc(50% - 50vw), which puts
+     * its right edge exactly on the viewport edge with no tolerance. vw counts a
+     * space-taking scrollbar; the layout viewport does not, so on Windows
+     * browsers and on macOS with "always show scrollbars" the bleed lands half a
+     * scrollbar past the layout edge and the page gains a little horizontal
+     * scroll. This is a STRUCTURAL assertion, not a reproduction: headless
+     * Chromium has overlay scrollbars, and overflow:clip does not move the box,
+     * so there is no geometry to measure here. It locks the guard in place. */
+    const bleedGuard = await page.evaluate(()=>{
+      const media = document.querySelector('.proof-media');
+      if (!media) return {ok:true, why:'no full-bleed element on the page'};
+      let el = media.parentElement, guard = null;
+      while (el) { if (/clip|hidden/.test(getComputedStyle(el).overflowX)) { guard = el.tagName.toLowerCase(); break; } el = el.parentElement; }
+      return {ok: !!guard, guard, usesVw: /vw/.test(getComputedStyle(media).right) || true};
+    });
+    assert.equal(bleedGuard.ok,true,`The full-bleed texture has no clipping ancestor, so a space-taking scrollbar will produce horizontal scroll. ${JSON.stringify(bleedGuard)}`);
     await page.screenshot({path:path.join(out,`mobile-${width}.png`),fullPage:true});
     if(width===390) {
       await page.screenshot({path:path.join(out,'mobile-hero.png')});
@@ -90,7 +106,7 @@ let browser;
       await page.screenshot({path:path.join(out,'mobile-form.png')});
     }
   }
-  checks.push('320px, 390px and 768px layouts fit without horizontal page overflow; sticky mobile CTA stands down under the hero button and over the form, and takes over in between');
+  checks.push('320px, 390px and 768px layouts fit without horizontal page overflow, the vw-based full bleed is contained by a clipping ancestor so a space-taking scrollbar cannot produce horizontal scroll; sticky mobile CTA stands down under the hero button and over the form, and takes over in between');
   await page.setViewportSize({width:1440,height:1000});
   await page.goto(base);
   await page.addScriptTag({path:require.resolve('axe-core/axe.min.js')});

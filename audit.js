@@ -14,6 +14,10 @@
  *   conversion  Ad-platform conversion identifiers. Leave any of them empty and
  *               that platform is simply not notified. See fireConversion below.
  */
+/* Which copy variant the visitor saw. Set before paint by the inline script
+ * in index.html, so it is already on the root element by the time this runs. */
+const VARIANT = document.documentElement.getAttribute('data-variant') || 'a';
+
 const AUDIT_CONFIG = Object.freeze({
   endpoint: '',
   privacyUrl: '',
@@ -36,7 +40,7 @@ function fireConversion(id) {
   if (!id || reported.has(id)) return;
   reported.add(id);
   const c = AUDIT_CONFIG.conversion;
-  const detail = { campaign: AUDIT_CONFIG.campaign, request_id: id, form: 'free-cloud-audit' };
+  const detail = { campaign: AUDIT_CONFIG.campaign, request_id: id, form: 'free-cloud-audit', variant: VARIANT };
   // Tag Manager and anything else listening on the data layer.
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({ event: 'audit_request_submitted', ...detail });
@@ -338,7 +342,7 @@ form.addEventListener('submit', async event => {
       signal: controller.signal,
       body: JSON.stringify({
         name, email: String(data.get('email')).trim(), provider: data.get('provider'),
-        campaign: AUDIT_CONFIG.campaign, source: 'Landing Page',
+        campaign: AUDIT_CONFIG.campaign, source: 'Landing Page', variant: VARIANT,
         page: location.origin + location.pathname, requestId, ...attribution
       })
     });
