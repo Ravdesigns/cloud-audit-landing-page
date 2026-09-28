@@ -105,3 +105,24 @@ Not restated. The `60b85a66...` fingerprint above covers the nine-file build and
 ### Publication state
 
 Unchanged. Local source only. `robots` remains `noindex, nofollow`, `endpoint` and `privacyUrl` remain empty, and no lead destination or privacy notice is configured. No deployment, no live CRM integration, no live test lead. The launch requirements listed above still all apply.
+
+## Revision, 2026-09-28 (portrait removed)
+
+### What changed
+
+- The stand-in portrait beside the McAfee quote and its "Placeholder image" badge are removed, and `assets/portrait-cutout.webp` is deleted. The quote is attributed by the `MT` monogram alone, which is what the stylesheet's own comment on `.proof figcaption` always called for.
+- `proof--portrait` is dropped from the figure, so the section returns to its original single column: quote and attribution on the left, texture bleeding behind. Its desktop and mobile rules are deleted rather than left dead.
+- The texture is lifted to fill the space the portrait held: opacity .46 to .55 on desktop and .30 to .38 on mobile, bleed width `min(66vw,940px)` to `min(70vw,1000px)`, mask height 56% to 58%. A first pass that also enlarged the mask read as a feature wall competing with the quote and was pulled back.
+
+### Why
+
+A review of the live page found the badge was not doing its load-bearing job. On desktop it resolved against the whole figure rather than the image, because `.proof-portrait` never set `position:relative`, and sat about 250px from the face; on mobile the photo stacked directly under "Mahesh Tyagarajan, VP Platform Engineering, McAfee". In both layouts a reader takes the face for his. The decision is recorded in `PRODUCT.md` and closed in `LAUNCH.md`.
+
+### Verification
+
+- Rendered at 1440 and 390: no horizontal overflow at either (`scrollWidth == clientWidth`), no leftover `proof-portrait` or `portrait-cutout` reference in `index.html` or `styles.css`.
+- `server.cjs` serves anything under `/assets/` by prefix, so deleting the file needs no allowlist change; `.webp` stays in its type map for `proof-texture.webp`.
+
+### Publication state
+
+Deployed through ZopDay. The launch blockers in `LAUNCH.md` are otherwise unchanged: `endpoint`, `privacyUrl` and the Ads conversion label are still empty and the form is still in preview mode.

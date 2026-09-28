@@ -30,11 +30,10 @@ attribute the lead to the ad that produced it.
   to change.
 - **Mark the GA4 `generate_lead` event as a key event** so it can be imported
   into Google Ads.
-- **A decision on the portrait.** A stand-in with a visible "Placeholder image"
-  badge currently sits beside the McAfee quote. It is honest, but it tells paid
-  visitors the page is unfinished, and it sits on the page's only social proof.
-  Either supply a cleared photograph of the person quoted, or remove the
-  portrait and go back to the `MT` monogram. See `PRODUCT.md`.
+- ~~**A decision on the portrait.**~~ **Decided 2026-09-28: removed.** The
+  stand-in and its "Placeholder image" badge are gone and the quote is back on
+  the `MT` monogram. See `PRODUCT.md`. The quote itself still needs McAfee's
+  sign-off before paid traffic, which is a separate item from the image.
 - **Settle the platform coverage question.** The `PLATFORMS AUDITED` row shows
   Databricks, Snowflake, Kubernetes and OpenShift. `PRODUCT.md` records this as
   owner-asserted, not confirmed. It is the claim on the page most likely to

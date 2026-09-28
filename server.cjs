@@ -17,7 +17,7 @@ const TYPES = {
   '.png': 'image/png',
   '.jpg': 'image/jpeg',
   '.jpeg': 'image/jpeg',
-  // The cut-out portrait: alpha, and a tenth the bytes of the PNG.
+  // The testimonial texture. The portrait that first needed this type is gone.
   '.webp': 'image/webp',
   '.txt': 'text/plain; charset=utf-8',
 };
